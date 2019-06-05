@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  HelloWorldFunction:
+    Properties:
+      CodeUri: s3://kevin-test-bucket-dispatch-deng/b51cf05cf90efe802c89369c799be3ec
+      Events:
+        HelloWorldApi:
+          Properties:
+            Method: GET
+            Path: /
+          Type: Api
+      Handler: index.handler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
