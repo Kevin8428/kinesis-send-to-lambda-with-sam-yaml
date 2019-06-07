@@ -1,14 +1,33 @@
 AWSTemplateFormatVersion : '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
-  HelloWorldFunction:
+  LambdaFunctionHelloWorld:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
       Runtime: nodejs8.10
+      Timeout: 10
+      Tracing: Active
       Events:
         HelloWorldApi:
           Type: Api
           Properties:
             Path: /
             Method: GET
+        Stream:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt KinesisStream.Arn
+            BatchSize: 100
+            StartingPosition: LATEST
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      ShardCount: 1
+Outputs:
+  FunctionName:
+    Description: "function name"
+    Value: !Ref LambdaFunctionHelloWorld
+  StreamARN:
+    Description: "stream arn"
+    Value: !GetAtt KinesisStream.Arn

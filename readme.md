@@ -1,6 +1,6 @@
 # SAM YAML TUTORIAL
 
-### Why use SAM file?
+### Why use SAM?
 Use when you want to define multiple interlinked pieces of your application.
 Therefore, typically have multiple `Resources`
 #### Remember: 

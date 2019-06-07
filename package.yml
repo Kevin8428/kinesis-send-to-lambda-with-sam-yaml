@@ -1,15 +1,41 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Outputs:
+  FunctionName:
+    Description: function name
+    Value:
+      Ref: LambdaFunctionHelloWorld
+  StreamARN:
+    Description: stream arn
+    Value:
+      Fn::GetAtt:
+      - KinesisStream
+      - Arn
 Resources:
-  HelloWorldFunction:
+  KinesisStream:
     Properties:
-      CodeUri: s3://kevin-test-bucket-dispatch-deng/b51cf05cf90efe802c89369c799be3ec
+      ShardCount: 1
+    Type: AWS::Kinesis::Stream
+  LambdaFunctionHelloWorld:
+    Properties:
+      CodeUri: s3://kevin-test-bucket-dispatch-deng/6e30d9d588e0d20eb98f99bf6fb9598f
       Events:
         HelloWorldApi:
           Properties:
             Method: GET
             Path: /
           Type: Api
+        Stream:
+          Properties:
+            BatchSize: 100
+            StartingPosition: LATEST
+            Stream:
+              Fn::GetAtt:
+              - KinesisStream
+              - Arn
+          Type: Kinesis
       Handler: index.handler
       Runtime: nodejs8.10
+      Timeout: 10
+      Tracing: Active
     Type: AWS::Serverless::Function
 Transform: AWS::Serverless-2016-10-31
