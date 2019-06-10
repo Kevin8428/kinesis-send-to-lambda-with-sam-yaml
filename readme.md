@@ -44,6 +44,99 @@ Resources:
 - The template above can be deployed liek any CloudFormation template: With the AWS CLI
 - However, there's a better way: Using the SAM specific CLI
 
+### RESOURCES
+
+#### S3
+create S3 bucket:
+`aws s3 mb s3://kevin-kinesis-to-lambda`
+
+#### Kinesis
+
+`zip function.zip index.js`
+
+```
+Resources:
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      ShardCount: 1
+```
+
+#### Lambda
+
+template:
+```
+Resources:
+  LambdaFunctionHelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Timeout: 10
+      Tracing: Active
+      Events:
+        HelloWorldApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+        Stream:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt KinesisStream.Arn
+            BatchSize: 100
+            StartingPosition: LATEST
+```
+
+generates:
+```
+Resources:
+  KinesisStream:
+    Properties:
+      ShardCount: 1
+    Type: AWS::Kinesis::Stream
+  LambdaFunctionHelloWorld:
+    Properties:
+      CodeUri: s3://kevin-test-bucket-dispatch-deng/6e30d9d588e0d20eb98f99bf6fb9598f
+      Events:
+        HelloWorldApi:
+          Properties:
+            Method: GET
+            Path: /
+          Type: Api
+        Stream:
+          Properties:
+            BatchSize: 100
+            StartingPosition: LATEST
+            Stream:
+              Fn::GetAtt:
+              - KinesisStream -- whatever the kinesis is named, here "KinesisStream"
+              - Arn
+          Type: Kinesis
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Timeout: 10
+      Tracing: Active
+    Type: AWS::Serverless::Function
+
+```
+
+#### Analytics
+
+template:
+```
+MyKinesisAnalytics:
+  Type: AWS::KinesisAnalytics::Application
+  Properties:
+    ApplicationCode: string -- SQL statements that: 1. read input 2. transform it 3. generate output. 
+    ApplicationDescription: string -- description of app
+    ApplicationName: string -- name of analytics app
+    Inputs: -- eg: configure to receive from single stream
+    - input
+```
+
+
+
 ## DEPLOYING WITH SAM CLI:
 1. `package` command
 eg: `sam package --template-file template.yml --output-template-file package.yml --s3-bucket kevin-test-bucket-dispatch-deng`
