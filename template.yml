@@ -24,43 +24,6 @@ Resources:
     Type: AWS::Kinesis::Stream
     Properties:
       ShardCount: 1
-  MyKinesisAnalytics:
-    Type: AWS::KinesisAnalytics::Application
-    Properties:
-      ApplicationName: "sampleAnalyticsApp"
-      ApplicationDescription: "sampe analytics app description"
-      ApplicationCode: "sample app code"
-      Inputs:
-        - NamePrefix: "sampleAppPrevix"
-          InputSchema:
-            RecordColumns:
-              - Name: "example"
-                SqlType: "INTEGER"
-                Mapping: "$.example"
-            RecordFormat:
-              RecordFormatType: "JSON"
-              MappingParameters:
-                JSONMappingParameters:
-                  RecordRowPath: "$"
-  KinesisAnalyticsRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: kinesisanalytics.amazonaws.com
-            Action: "sts:AssumeRole"
-      Path: "/"
-      Policies:
-        - PolicyName: Open
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action: "*"
-                Resource: "*"
 Outputs:
   FunctionName:
     Description: "function name"

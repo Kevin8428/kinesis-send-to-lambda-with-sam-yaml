@@ -132,10 +132,42 @@ MyKinesisAnalytics:
     ApplicationDescription: string -- description of app
     ApplicationName: string -- name of analytics app
     Inputs: -- eg: configure to receive from single stream
-    - input
+    - NamePrefix: "sampleAppPrevix"
+          InputSchema:
+            RecordColumns:
+              - Name: "example"
+                SqlType: "INTEGER"
+                Mapping: "$.example"
+            RecordFormat: -- record format on the streaming source
+              RecordFormatType: "JSON"
+              MappingParameters:
+                JSONMappingParameters:
+                  RecordRowPath: "$"
 ```
 
+#### IAM Role
 
+```
+KinesisAnalyticsRole:
+Type: AWS::IAM::Role
+Properties:
+    AssumeRolePolicyDocument: -- The trust policy that is associated with this role. Defines which entities can assume the role.
+    Version: "2012-10-17"
+    Statement:
+        - Effect: Allow
+        Principal:
+            Service: kinesisanalytics.amazonaws.com
+        Action: "sts:AssumeRole"
+    Path: "/"
+    Policies:
+    - PolicyName: Open
+        PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+            - Effect: Allow
+            Action: "*"
+            Resource: "*"
+```
 
 ## DEPLOYING WITH SAM CLI:
 1. `package` command

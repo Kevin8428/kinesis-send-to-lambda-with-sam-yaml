@@ -17,7 +17,7 @@ Resources:
     Type: AWS::Kinesis::Stream
   LambdaFunctionHelloWorld:
     Properties:
-      CodeUri: s3://kevin-test-bucket-dispatch-deng/6e30d9d588e0d20eb98f99bf6fb9598f
+      CodeUri: s3://kevin-kinesis-to-lambda/28cd88f5a70c8995ddf8ba58445babe1
       Events:
         HelloWorldApi:
           Properties:
